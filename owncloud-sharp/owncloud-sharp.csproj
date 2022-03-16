@@ -67,7 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="RestSharp">
-      <HintPath>..\..\RestSharp105.2.3\RestSharp.dll</HintPath>
+      <HintPath>..\RestSharp105.2.3\RestSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

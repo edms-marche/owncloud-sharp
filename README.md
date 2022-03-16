@@ -1,4 +1,12 @@
-﻿C# client library for ownCloud
+﻿------
+
+基於 [owncloud-sharp](https://github.com/bnoffer/owncloud-sharp) 改過嚟，我用嚟當做 NextCloud C# API。
+
+用於 .Net Framework 4.5.2 所以要用 RestSharp 105.2.3
+
+------
+
+C# client library for ownCloud
 ==============================
 
 A portable class library to interact with ownCloud servers through WebDAV and the ownCloud OCS API.
