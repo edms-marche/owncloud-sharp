@@ -51,6 +51,11 @@ namespace owncloudsharp
 		/// OCS Provisioning API path.
 		/// </summary>
 		private const string ocsServiceCloud = "cloud";
+        /// <summary>
+        /// 2022.04.15 paulus:
+        /// OCS Group Folder API path
+        /// </summary>
+        private const string ocsServiceGroupFolder = "index.php/apps/groupfolders";
 		#endregion
 
 		#region Constructor
@@ -231,15 +236,77 @@ namespace owncloudsharp
 			var uri = GetUri ("index.php/apps/files/ajax/download.php?dir=" + WebUtility.UrlEncode(path));
 			return client.ExecuteGet (uri);
 		}
-		#endregion
+        #endregion
 
-		#region OCS
-		#region Remote Shares
-		/// <summary>
-		/// List all remote shares.
-		/// </summary>
-		/// <returns>List of remote shares.</returns>
-		public object ListOpenRemoteShare() {
+        #region OCS
+        #region 2022.04.15 paulus: Group Folders
+        /// <summary>
+        /// List all group folders
+        /// </summary>
+        /// <returns></returns>
+        public List<GroupFolder> GroupFoldersList()
+        {
+            var request = new RestRequest(GetOcsPath(ocsServiceGroupFolder, "folders"), Method.GET);
+            request.AddHeader("OCS-APIREQUEST", "true");
+            // 2022.04.15 paulus: 我想保留 this.rest 個 BaseUrl
+            var rs = rest;
+            rs.BaseUrl = new Uri(url + "/");
+            var response = rs.Execute(request);
+
+            CheckOcsStatus(response);
+
+            var content = response.Content;
+            #region TODO: Parse response
+            if (content != null)
+            {
+                try
+                {
+                    List<GroupFolder> gf = new List<GroupFolder>();
+                    XDocument xdoc = XDocument.Parse(content.ToString());
+                    foreach (XElement data in xdoc.Descendants(XName.Get("data")))      // descentants is recursive
+                    {
+                        var nodes = data.Elements(XName.Get("element"));                // elements is not recursive
+                        foreach (XElement node in nodes)
+                        {
+                            #region deserialize node
+                            bool acl = false;
+                            var id = node.Element("id") == null ? 0 : Convert.ToInt32(node.Element("id").Value);
+                            var folder = node.Element("mount_point") == null ? "" : node.Element("mount_point").Value;
+                            var quota = node.Element("quota") == null ? 0 : Convert.ToInt32(node.Element("quota").Value);
+                            var size = node.Element("size") == null ? 0 : Convert.ToInt32(node.Element("size").Value);
+                            acl = node.Element("acl") == null ? false : bool.TryParse(node.Element("acl").Value, out acl);
+
+                            var item = new GroupFolder()
+                            {
+                                id = id,
+                                name = folder,
+                                quota = quota,
+                                size = size,
+                                acl = acl
+                            };
+                            gf.Add(item);
+                            #endregion
+                        }
+                        return gf;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            #endregion
+
+            return null;
+        }
+        #endregion
+
+        #region Remote Shares
+        /// <summary>
+        /// List all remote shares.
+        /// </summary>
+        /// <returns>List of remote shares.</returns>
+        public object ListOpenRemoteShare() {
 			var request = new RestRequest(GetOcsPath(ocsServiceShare, "remote_shares"), Method.GET);
 			request.AddHeader("OCS-APIREQUEST", "true");
 			var response = rest.Execute (request);

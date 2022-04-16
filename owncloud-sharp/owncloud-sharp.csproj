@@ -36,6 +36,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Exceptions\ResponseError.cs" />
     <Compile Include="Exceptions\OCSResponseError.cs" />
+    <Compile Include="Types\GroupFolder.cs" />
     <Compile Include="Types\PublicShare.cs" />
     <Compile Include="Types\Share.cs" />
     <Compile Include="Types\UserShare.cs" />
