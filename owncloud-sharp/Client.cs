@@ -242,6 +242,8 @@ namespace owncloudsharp
         #region 2022.04.15 paulus: Group Folders
         /// <summary>
         /// List all group folders
+        /// powershell 測試 syntax
+        /// curl -X GET -u marche:mc@24949981 http://10.0.1.8/index.php/apps/groupfolders/folders -H "OCS-APIRequest: true"
         /// </summary>
         /// <returns></returns>
         public List<GroupFolder> GroupFoldersList()
